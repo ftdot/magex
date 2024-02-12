@@ -20,7 +20,7 @@ type CircleCollider struct {
 	Circle         *collision2d.Circle
 	PositionOffset *vector2.Vector2
 	RadiusScalar   float64
-	Tags *ctags.CTags
+	Tags           *ctags.CTags
 
 	ID string // System variable with ID of the component.
 }
