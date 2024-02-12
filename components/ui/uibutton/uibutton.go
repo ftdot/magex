@@ -86,10 +86,16 @@ func (b *UIButton) handleClicked(gb *game.GameBase, btn ebiten.MouseButton) erro
 		}
 		if !b.clicked[btn] {
 			b.clicked[btn] = true
+			if b.onClickF == nil {
+				return nil
+			}
 			return b.onClickF(UIButtonClickEvent{GameBase: gb, Button: b, MouseButton: btn})
 		}
 	} else if b.clicked[btn] {
 		b.clicked[btn] = false
+		if b.exitClickF == nil {
+			return nil
+		}
 		return b.exitClickF(UIButtonClickEvent{GameBase: gb, Button: b, MouseButton: btn})
 	}
 
@@ -107,10 +113,16 @@ func (b *UIButton) Update(gb *game.GameBase) error {
 	if anyColl {
 		if !b.hovered {
 			b.hovered = true
+			if b.onHoverF == nil {
+				return nil
+			}
 			b.onHoverF(gb, b)
 		}
 	} else if b.hovered {
 		b.hovered = false
+		if b.exitHoverF == nil {
+			return nil
+		}
 		b.exitHoverF(gb, b)
 	}
 
