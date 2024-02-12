@@ -7,6 +7,7 @@ import (
 	"github.com/ftdot/magex/game"
 	"github.com/ftdot/magex/physics/collision2d"
 	"github.com/ftdot/magex/utils"
+	"github.com/ftdot/magex/utils/ctags"
 	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/mmath"
 	"github.com/ftdot/magex/utils/vector2"
@@ -21,6 +22,7 @@ type BoxCollider struct {
 	BoxPolygon     *collision2d.Polygon
 	PositionOffset *vector2.Vector2
 	SizeScalar     *vector2.Vector2
+	Tags           *ctags.CTags
 
 	ID string // System variable with ID of the component.
 }
@@ -31,6 +33,7 @@ func NewBoxCollider(sprite interfaces.ISprite) *BoxCollider {
 		BoxPolygon:     collision2d.NewBox(vector2.Null.Copy(), -1, -1).ToPolygon(),
 		PositionOffset: vector2.Null.Copy(),
 		SizeScalar:     vector2.Identity.Copy(),
+		Tags:           ctags.New(),
 		ID:             utils.GenerateComponentID(),
 	}
 }
@@ -59,6 +62,10 @@ func (bc *BoxCollider) GetPolygon() *collision2d.Polygon {
 
 func (bc *BoxCollider) GetSprite() interfaces.ISprite {
 	return bc.Sprite
+}
+
+func (bc *BoxCollider) GetCTags() *ctags.CTags {
+	return bc.Tags
 }
 
 ////

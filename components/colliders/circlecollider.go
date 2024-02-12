@@ -6,6 +6,7 @@ import (
 	"github.com/ftdot/magex/game"
 	"github.com/ftdot/magex/physics/collision2d"
 	"github.com/ftdot/magex/utils"
+	"github.com/ftdot/magex/utils/ctags"
 	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/vector2"
 
@@ -19,6 +20,7 @@ type CircleCollider struct {
 	Circle         *collision2d.Circle
 	PositionOffset *vector2.Vector2
 	RadiusScalar   float64
+	Tags *ctags.CTags
 
 	ID string // System variable with ID of the component.
 }
@@ -57,6 +59,10 @@ func (cc *CircleCollider) GetPolygon() *collision2d.Polygon {
 
 func (cc *CircleCollider) GetSprite() interfaces.ISprite {
 	return cc.Sprite
+}
+
+func (cc *CircleCollider) GetCTags() *ctags.CTags {
+	return cc.Tags
 }
 
 ////
