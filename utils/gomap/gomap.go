@@ -65,6 +65,7 @@ func New() *GOMap {
 		mapAs:       map[string]goi.Awakable{},
 		sliceSQs:    []goi.Startable{},
 		mapPUs:      map[string]goi.PhysUpdatable{},
+		mapP2Us:     map[string]goi.Phys2Updatable{},
 		mapUs:       map[string]goi.Updatable{},
 		mapDQs:      map[string]goi.DrawableQueued{},
 		mapDUIQs:    map[string]goi.DrawableUIQueued{},
