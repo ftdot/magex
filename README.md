@@ -12,6 +12,8 @@ used to write your own games. But, this product
 **isn't provides stability**. Originally posted
 for mod development.
 
+Project **is open for any contributions!**
+
 ## Progress
 
 **Progress in the moment of the first push:**
@@ -42,4 +44,15 @@ colorize the text by tags like: `[#fffff]`,
 **UI** *level*
 - - - `Text` - *Simple text*
 
-Project **is open for any contributions!**
+## Known issues
+
+- **Rigidbody** is unstable, doesn't for in this
+moment.
+- **Camera** scaling is work, but these is no some
+algorithms to scale the camera for the center
+- **Tilemap** displays tiles incorrectly (one-two
+pixels of the tile textures overlaps with other)
+
+if you know a solution to the problem, please
+create an [issue](https://github.com/ftdot/magex/issues/new)
+or create a PR.
