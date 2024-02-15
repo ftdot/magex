@@ -52,6 +52,9 @@ moment.
 algorithms to scale the camera for the center
 - **Tilemap** displays tiles incorrectly (one-two
 pixels of the tile textures overlaps with other)
+- **GOMap** calls event-functions with incorrect
+priority. Incorrect texture mapping occurs
+(blinking).
 
 if you know a solution to the problem, please
 create an [issue](https://github.com/ftdot/magex/issues/new)
