@@ -1,10 +1,8 @@
 package sprite
 
 import (
-	"github.com/ftdot/magex/components/transform"
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/utils"
-	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/mmath"
 	"github.com/ftdot/magex/utils/rectutil"
 	"github.com/ftdot/magex/utils/vector2"
@@ -13,7 +11,7 @@ import (
 )
 
 type Sprite struct {
-	Transform transform.ITransform
+	Transform interfaces.ITransform
 	Image     *ebiten.Image
 	Options   interfaces.ISpriteOptions
 
@@ -27,25 +25,26 @@ type Sprite struct {
 }
 
 // Creates new sprite
-func New(transform transform.ITransform, image *ebiten.Image) *Sprite {
+func New(tf interfaces.ITransform, img *ebiten.Image) *Sprite {
 	var ix, iy float64
-	if image != nil {
-		ix = float64(image.Bounds().Size().X)
-		iy = float64(image.Bounds().Size().Y)
+	if img != nil {
+		ix = float64(img.Bounds().Size().X)
+		iy = float64(img.Bounds().Size().Y)
 	} else {
 		ix = 0
 		iy = 0
 	}
 
 	return &Sprite{
-		Transform: transform,
-		Image: image,
-		Options: NewSpriteOptions(),
-		bbA: nil, bbB: nil,
-		pivot: vector2.New(-ix/2, -iy/2),
+		Transform:     tf,
+		Image:         img,
+		Options:       NewSpriteOptions(),
+		bbA:           nil,
+		bbB:           nil,
+		pivot:         vector2.New(-ix/2, -iy/2),
 		pivotOpposite: vector2.New(ix/2, ix/2),
-		imageBounds: vector2.New(ix, iy),
-		ID: utils.GenerateComponentID(),
+		imageBounds:   vector2.New(ix, iy),
+		ID:            utils.GenerateComponentID(),
 	}
 }
 
@@ -53,15 +52,16 @@ func (s Sprite) DrawPriority() float64 {
 	return s.Transform.GetLayer()
 }
 
-func (s Sprite) Draw(game *game.GameBase, screen *ebiten.Image) {
+func (s Sprite) Draw(game interfaces.IGameBase, screen *ebiten.Image) {
 	if !s.Options.IsVisible() {
 		return
 	}
-	if l := s.Transform.GetLayer(); l > game.CurrentScene.CurrentMainCamera.Transform.GetLayer() || l < game.CurrentScene.CurrentMainCamera.Camera.ViewRange {
+	cam := game.GetCurrentScene().GetMainCamera()
+	if l := s.Transform.GetLayer(); l > cam.GetTransform().GetLayer() || l < cam.GetViewRange() {
 		return
 	}
 
-	camTransform := game.CurrentScene.CurrentMainCamera.Transform
+	camTransform := cam.GetTransform()
 	camPos := camTransform.GetPosition()
 	targetPos := s.Transform.GetPosition().Sub(camPos).Add(s.GetPivotOppositeScaled())
 
@@ -75,7 +75,7 @@ func (s Sprite) Draw(game *game.GameBase, screen *ebiten.Image) {
 	s.bbA = bA
 	s.bbB = bB
 
-	if bA.X < game.CurrentScene.CurrentMainCamera.Camera.Offset.X && bB.X >= camPos.X && bB.Y >= camPos.Y && bA.Y < game.CurrentScene.CurrentMainCamera.Camera.Offset.Y {
+	if bA.X < cam.GetOffset().X && bB.X >= camPos.X && bB.Y >= camPos.Y && bA.Y < cam.GetOffset().Y {
 		var opts ebiten.DrawImageOptions
 
 		scale := s.Transform.GetScale()
@@ -92,11 +92,7 @@ func (s Sprite) Draw(game *game.GameBase, screen *ebiten.Image) {
 
 }
 
-func (s *Sprite) SetTransform(t transform.ITransform) {
-	s.Transform = t
-}
-
-func (s *Sprite) GetTransform() transform.ITransform {
+func (s *Sprite) GetTransform() interfaces.ITransform {
 	return s.Transform
 }
 
@@ -138,7 +134,7 @@ func (s *Sprite) SetPivot(pivot *vector2.Vector2) {
 	s.pivotOpposite = s.pivot.Reverse()
 }
 
-func (s *Sprite) GetImageBounds() *vector2.Vector2 {
+func (s *Sprite) GetImageSize() *vector2.Vector2 {
 	return s.imageBounds
 }
 

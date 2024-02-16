@@ -4,11 +4,10 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/physics/collision2d"
 	"github.com/ftdot/magex/utils"
 	"github.com/ftdot/magex/utils/ctags"
-	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/mmath"
 	"github.com/ftdot/magex/utils/vector2"
 
@@ -70,9 +69,9 @@ func (bc *BoxCollider) GetCTags() *ctags.CTags {
 
 ////
 
-func (bc *BoxCollider) PhysUpdate(game *game.GameBase) error {
+func (bc *BoxCollider) PhysUpdate(gb interfaces.IGameBase) error {
 
-	bounds := bc.Sprite.GetImageBounds().Mul(bc.Sprite.GetTransform().GetScale()).Mul(bc.SizeScalar)
+	bounds := bc.Sprite.GetImageSize().Mul(bc.Sprite.GetTransform().GetScale()).Mul(bc.SizeScalar)
 	pivot := bc.Sprite.GetPivotScaled()
 	pivotOpposite := bc.Sprite.GetPivotOpposite().Mul(bc.Sprite.GetTransform().GetScale())
 
@@ -90,7 +89,7 @@ func (bc *BoxCollider) DrawUIPriority() float64 {
 	return 90000
 }
 
-func (bc *BoxCollider) DrawUI(game *game.GameBase, screen *ebiten.Image) {
+func (bc *BoxCollider) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) {
 
 	verts := bc.BoxPolygon.Points
 	pos := bc.BoxPolygon.Pos

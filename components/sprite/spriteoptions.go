@@ -4,7 +4,7 @@ import "image/color"
 
 type SpriteOptions struct {
 	Visible bool
-	Color   color.RGBA
+	Color   color.Color
 }
 
 func NewSpriteOptions() *SpriteOptions {
@@ -20,7 +20,7 @@ func (so *SpriteOptions) IsVisible() bool {
 	return so.Visible
 }
 
-func (so *SpriteOptions) GetColor() color.RGBA {
+func (so *SpriteOptions) GetColor() color.Color {
 	return so.Color
 }
 
@@ -28,6 +28,6 @@ func (so *SpriteOptions) SetVisible(v bool) {
 	so.Visible = v
 }
 
-func (so *SpriteOptions) SetColor(c color.RGBA) {
+func (so *SpriteOptions) SetColor(c color.Color) {
 	so.Color = c
 }

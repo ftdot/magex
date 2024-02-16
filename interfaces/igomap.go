@@ -3,9 +3,9 @@ package interfaces
 import "github.com/hajimehoshi/ebiten/v2"
 
 // Not full implementation of the GOMap interface.
-// There is missing SetupGame() method to avoid problems
-// with an import cycle.
 type IGOMap interface {
+	// Must be called before all the operations.
+	SetupGame(gameBase IGameBase)
 	// Tries to get the game object by given name.
 	Get(name string) (i interface{}, ok bool)
 	// Registers a new game object. If Awake() function implemented,

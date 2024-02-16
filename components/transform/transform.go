@@ -1,6 +1,7 @@
 package transform
 
 import (
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/utils"
 	"github.com/ftdot/magex/utils/vector2"
 )
@@ -15,12 +16,12 @@ type Transform struct {
 	Rotation float64          // Theta rotation in Degress
 	Layer    float64          // Also known as Z coordinate
 
-	LocalPosition *vector2.Vector2 // Local position. Has no any role, if parent is nil
-	LocalScale    *vector2.Vector2 // Local scale. Has no any role, if parent is nil
-	LocalRotation float64          // Local rotation. Has no any role, if parent is nil
-	LocalLayer    float64          // Local layer. Has no any role, if parent is nil
-	Parent        ITransform       // Parent transform (can be nil if has no parent)
-	ID            string           // System variable with ID of the component
+	LocalPosition *vector2.Vector2      // Local position. Has no any role, if parent is nil
+	LocalScale    *vector2.Vector2      // Local scale. Has no any role, if parent is nil
+	LocalRotation float64               // Local rotation. Has no any role, if parent is nil
+	LocalLayer    float64               // Local layer. Has no any role, if parent is nil
+	Parent        interfaces.ITransform // Parent transform (can be nil if has no parent)
+	ID            string                // System variable with ID of the component
 }
 
 ////
@@ -43,7 +44,7 @@ func New(position, scale *vector2.Vector2, rotation, layer float64) *Transform {
 ////
 
 func (t *Transform) SetPosition(pos *vector2.Vector2) {
-	if (t.Parent == nil) {
+	if t.Parent == nil {
 		t.Position = pos
 		return
 	}
@@ -51,7 +52,7 @@ func (t *Transform) SetPosition(pos *vector2.Vector2) {
 }
 
 func (t *Transform) SetScale(scale *vector2.Vector2) {
-	if (t.Parent == nil) {
+	if t.Parent == nil {
 		t.Scale = scale
 		return
 	}
@@ -59,7 +60,7 @@ func (t *Transform) SetScale(scale *vector2.Vector2) {
 }
 
 func (t *Transform) SetRotation(rot float64) {
-	if (t.Parent == nil) {
+	if t.Parent == nil {
 		t.Rotation = rot
 		return
 	}
@@ -67,14 +68,14 @@ func (t *Transform) SetRotation(rot float64) {
 }
 
 func (t *Transform) SetLayer(layer float64) {
-	if (t.Parent == nil) {
+	if t.Parent == nil {
 		t.Layer = layer
 		return
 	}
 	t.LocalLayer = t.Parent.GetLayer() - layer
 }
 
-func (t *Transform) SetParent(parent ITransform) {
+func (t *Transform) SetParent(parent interfaces.ITransform) {
 	t.LocalPosition = t.Position
 	t.LocalScale = t.Scale
 	t.LocalRotation = t.Rotation
@@ -88,7 +89,7 @@ func (t *Transform) GetPosition() *vector2.Vector2 {
 	if t.Parent == nil {
 		return t.Position
 	}
-	return t.Parent.GetPosition().Add(t.LocalPosition)
+	return t.Parent.GetPosition().Sub(t.LocalPosition)
 }
 
 func (t *Transform) GetScale() *vector2.Vector2 {
@@ -112,7 +113,7 @@ func (t *Transform) GetLayer() float64 {
 	return t.Parent.GetLayer() + t.LocalLayer
 }
 
-func (t *Transform) GetParent() ITransform {
+func (t *Transform) GetParent() interfaces.ITransform {
 	return t.Parent
 }
 

@@ -1,4 +1,4 @@
-package transform
+package interfaces
 
 import "github.com/ftdot/magex/utils/vector2"
 

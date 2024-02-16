@@ -1,8 +1,7 @@
 package goi
 
 import (
-	"github.com/ftdot/magex/game"
-
+	"github.com/ftdot/magex/interfaces"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -15,36 +14,36 @@ type Destroyable interface {
 }
 
 type Startable interface {
-	Start(gameBase *game.GameBase) error
+	Start(gameBase interfaces.IGameBase) error
 	StartPriority() float64
 }
 
 type PhysUpdatable interface {
-	PhysUpdate(gameBase *game.GameBase) error
+	PhysUpdate(gameBase interfaces.IGameBase) error
 }
 
 type Phys2Updatable interface {
-	Phys2Update(gameBase *game.GameBase) error
+	Phys2Update(gameBase interfaces.IGameBase) error
 }
 
 type Updatable interface {
-	Update(gameBase *game.GameBase) error
+	Update(gameBase interfaces.IGameBase) error
 }
 
 type DrawableQueued interface {
-	Draw(gameBase *game.GameBase, screen *ebiten.Image)
+	Draw(gameBase interfaces.IGameBase, screen *ebiten.Image)
 	DrawPriority() float64
 }
 
 type DrawableUIQueued interface {
-	DrawUI(gameBase *game.GameBase, screen *ebiten.Image)
+	DrawUI(gameBase interfaces.IGameBase, screen *ebiten.Image)
 	DrawUIPriority() float64
 }
 
-type Component interface {
+type IComponent interface {
 	GetID() string
 }
 
 type WithComponents interface {
-	GetComponents() []Component
+	WithComponents() []IComponent
 }

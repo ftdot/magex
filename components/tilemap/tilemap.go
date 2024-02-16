@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/ftdot/magex/components/transform"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/utils"
 	"github.com/ftdot/magex/utils/vector2"
 )
@@ -15,31 +16,37 @@ type TilePosition struct {
 
 // Primitive TileMap contains the square tiles. This
 // makes work with tiles easier. Also, creates its
-// own coordinate system depending on the size of the
-// square of one tile.
+// own coordinate system depending on the size of one
+// tile.
 //
 // This component does not need to be added to the GetComponents() function!
 type TileMap[T any] struct {
-	Transform      transform.ITransform
+	Transform      interfaces.ITransform
 	tiles          map[TilePosition]T // All the tiles
 	tileSizeScaled float64            // Scaled size of the tiles
 	ID             string
 }
 
-func New[T any](t transform.ITransform, tileSize float64) *TileMap[T] {
+func New[T any](tf interfaces.ITransform, tileSize float64) *TileMap[T] {
 	return &TileMap[T]{
-		Transform:      t,
+		Transform:      tf,
 		tiles:          map[TilePosition]T{},
-		tileSizeScaled: tileSize * t.GetScale().X,
+		tileSizeScaled: tileSize * tf.GetScale().X,
 		ID:             utils.GenerateComponentID(),
 	}
 }
 
 ////
 
+func (tm *TileMap[T]) GetTransform() interfaces.ITransform {
+	return tm.Transform
+}
+
+////
+
 // Places a tile at the given position. Returns the transform,
-// that must be set to the
-func (tm *TileMap[T]) PlaceTile(localX, localY int, localRot, localLayer float64, tile T) transform.ITransform {
+// that must be set to this tile.
+func (tm *TileMap[T]) PlaceTile(localX, localY int, localRot, localLayer float64, tile T) interfaces.ITransform {
 	t := transform.New(vector2.NewInt(localX, localY).MulScalar(tm.tileSizeScaled), vector2.Identity.Copy(), localRot, localLayer)
 	t.SetParent(tm.Transform)
 

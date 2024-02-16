@@ -1,35 +1,27 @@
 package scene
 
 import (
-	"errors"
-
-	"github.com/ftdot/magex/primitives/maincamera"
-	"github.com/ftdot/magex/utils/interfaces"
+	"github.com/ftdot/magex/interfaces"
+	"github.com/ftdot/magex/utils/gomap"
 )
-
-////
-
-var ErrGOMapNil = errors.New("gomap is nil, must be initialized in scene enter function")
-
-type SceneF func(scene *Scene) error
 
 ////
 
 type Scene struct {
 	GOMap  interfaces.IGOMap
-	enterF SceneF
-	exitF  SceneF
+	enterF interfaces.SceneF
+	exitF  interfaces.SceneF
 
-	CurrentMainCamera *maincamera.MainCamera
+	CurrentMainCamera  interfaces.ICamera
 	CurrentRigidbodies []interfaces.IRigidbody
 }
 
-func New(enterF SceneF, exitF SceneF) *Scene {
+func New(enterF interfaces.SceneF, exitF interfaces.SceneF) *Scene {
 	return &Scene{
-		GOMap:             nil,
-		enterF:            enterF,
-		exitF:             exitF,
-		CurrentMainCamera: nil,
+		GOMap:              gomap.New(),
+		enterF:             enterF,
+		exitF:              exitF,
+		CurrentMainCamera:  nil,
 		CurrentRigidbodies: []interfaces.IRigidbody{},
 	}
 }
@@ -39,12 +31,10 @@ func New(enterF SceneF, exitF SceneF) *Scene {
 // Called when scene is entered by game.
 func (s *Scene) Enter() error {
 
+	s.GOMap = gomap.New()
+
 	if err := s.enterF(s); err != nil {
 		return err
-	}
-
-	if s.GOMap == nil {
-		return ErrGOMapNil
 	}
 
 	if err := s.GOMap.StartQueuedStartables(); err != nil {
@@ -71,18 +61,18 @@ func (s *Scene) Exit() error {
 }
 
 // Set ups the Enter() function handler
-func (s *Scene) SetEnterF(enterF SceneF) {
+func (s *Scene) SetEnterF(enterF interfaces.SceneF) {
 	s.enterF = enterF
 }
 
 // Set ups the Exit() function handler
-func (s *Scene) SetExitF(exitF SceneF) {
+func (s *Scene) SetExitF(exitF interfaces.SceneF) {
 	s.exitF = exitF
 }
 
 ////
 
-func (s *Scene) SetMainCamera(cam *maincamera.MainCamera) error {
+func (s *Scene) SetMainCamera(cam interfaces.ICamera) error {
 	s.GOMap.Unregister("MainCamera") // MainCamera may not exists
 	if err := s.GOMap.Register("MainCamera", cam); err != nil {
 		return err
@@ -90,4 +80,22 @@ func (s *Scene) SetMainCamera(cam *maincamera.MainCamera) error {
 	s.CurrentMainCamera = cam
 
 	return nil
+}
+
+////
+
+func (s *Scene) GetMainCamera() interfaces.ICamera {
+	return s.CurrentMainCamera
+}
+
+func (s *Scene) GetGOMap() interfaces.IGOMap {
+	return s.GOMap
+}
+
+func (s *Scene) SetCurrentRigidbodies(rigidbodies []interfaces.IRigidbody) {
+	s.CurrentRigidbodies = rigidbodies
+}
+
+func (s *Scene) GetCurrentRigidbodies() []interfaces.IRigidbody {
+	return s.CurrentRigidbodies
 }

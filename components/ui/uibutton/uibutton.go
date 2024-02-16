@@ -1,27 +1,12 @@
 package uibutton
 
 import (
-	"github.com/ftdot/magex/components/ui/uisprite"
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/physics/collision2d"
 	"github.com/ftdot/magex/utils"
-	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/vector2"
 	"github.com/hajimehoshi/ebiten/v2"
 )
-
-////
-
-type UIButtonClickEvent struct {
-	GameBase    *game.GameBase
-	Button      *UIButton
-	MouseButton ebiten.MouseButton
-}
-
-////
-
-type HoverF func(gb *game.GameBase, uiButton *UIButton) error
-type ClickF func(e UIButtonClickEvent) error
 
 ////
 
@@ -29,13 +14,13 @@ type ClickF func(e UIButtonClickEvent) error
 // But keep in mind, that the event fuctions can be called many
 // times with different mouse buttons.
 type UIButton struct {
-	UISprite  *uisprite.UISprite
+	Sprite    interfaces.ISprite
 	Colliders []interfaces.ICollider
 
-	onHoverF   HoverF
-	exitHoverF HoverF
-	onClickF   ClickF
-	exitClickF ClickF
+	onHoverF   interfaces.UIButtonHoverF
+	exitHoverF interfaces.UIButtonHoverF
+	onClickF   interfaces.UIButtonClickF
+	exitClickF interfaces.UIButtonClickF
 
 	hovered bool
 	clicked map[ebiten.MouseButton]bool
@@ -43,10 +28,10 @@ type UIButton struct {
 	ID string
 }
 
-func New(uiSprite *uisprite.UISprite, cols []interfaces.ICollider) *UIButton {
+func New(sprite interfaces.ISprite, colliders []interfaces.ICollider) *UIButton {
 	return &UIButton{
-		UISprite:  uiSprite,
-		Colliders: cols,
+		Sprite:    sprite,
+		Colliders: colliders,
 		hovered:   false,
 		clicked: map[ebiten.MouseButton]bool{
 			ebiten.MouseButton0: false,
@@ -61,25 +46,25 @@ func New(uiSprite *uisprite.UISprite, cols []interfaces.ICollider) *UIButton {
 
 ////
 
-func (b *UIButton) OnClick(onClickF ClickF) {
+func (b *UIButton) OnClick(onClickF interfaces.UIButtonClickF) {
 	b.onClickF = onClickF
 }
 
-func (b *UIButton) ExitClick(exitClickF ClickF) {
+func (b *UIButton) ExitClick(exitClickF interfaces.UIButtonClickF) {
 	b.exitClickF = exitClickF
 }
 
-func (b *UIButton) OnHover(onHover HoverF) {
+func (b *UIButton) OnHover(onHover interfaces.UIButtonHoverF) {
 	b.onHoverF = onHover
 }
 
-func (b *UIButton) ExitHover(exitHover HoverF) {
+func (b *UIButton) ExitHover(exitHover interfaces.UIButtonHoverF) {
 	b.exitHoverF = exitHover
 }
 
 ////
 
-func (b *UIButton) handleClicked(gb *game.GameBase, btn ebiten.MouseButton) error {
+func (b *UIButton) handleClicked(gb interfaces.IGameBase, btn ebiten.MouseButton) error {
 	if ebiten.IsMouseButtonPressed(btn) {
 		if !b.hovered {
 			return nil
@@ -89,20 +74,28 @@ func (b *UIButton) handleClicked(gb *game.GameBase, btn ebiten.MouseButton) erro
 			if b.onClickF == nil {
 				return nil
 			}
-			return b.onClickF(UIButtonClickEvent{GameBase: gb, Button: b, MouseButton: btn})
+			return b.onClickF(interfaces.UIButtonClickEvent{
+				GameBase:    gb,
+				Button:      b,
+				MouseButton: btn,
+			})
 		}
 	} else if b.clicked[btn] {
 		b.clicked[btn] = false
 		if b.exitClickF == nil {
 			return nil
 		}
-		return b.exitClickF(UIButtonClickEvent{GameBase: gb, Button: b, MouseButton: btn})
+		return b.exitClickF(interfaces.UIButtonClickEvent{
+			GameBase:    gb,
+			Button:      b,
+			MouseButton: btn,
+		})
 	}
 
 	return nil
 }
 
-func (b *UIButton) Update(gb *game.GameBase) error {
+func (b *UIButton) Update(gb interfaces.IGameBase) error {
 
 	anyColl := false
 	for _, col := range b.Colliders {
@@ -116,14 +109,20 @@ func (b *UIButton) Update(gb *game.GameBase) error {
 			if b.onHoverF == nil {
 				return nil
 			}
-			b.onHoverF(gb, b)
+			b.onHoverF(interfaces.UIButtonHoverEvent{
+				GameBase: gb,
+				Button:   b,
+			})
 		}
 	} else if b.hovered {
 		b.hovered = false
 		if b.exitHoverF == nil {
 			return nil
 		}
-		b.exitHoverF(gb, b)
+		b.exitHoverF(interfaces.UIButtonHoverEvent{
+			GameBase: gb,
+			Button:   b,
+		})
 	}
 
 	if err := b.handleClicked(gb, ebiten.MouseButton0); err != nil {

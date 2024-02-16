@@ -6,22 +6,26 @@ import (
 
 // Used to convert Degress value to Radians.
 // Formula: Radians = Degress * RadiansMeasurement90.
-//        : π/90
+//
+//	: π/90
 const RadiansMeasurement90 = math.Pi / 90
 
 // Used to convert Degress value to Radians.
 // Formula: Radians = Degress * RadiansMeasurement180.
-//        : π/180
+//
+//	: π/180
 const RadiansMeasurement180 = math.Pi / 180
 
 // Used to convert Radians value to Degrees.
 // Formula: Radians = Radians * DegreesMeasurement90.
-//        : 90/π
+//
+//	: 90/π
 const DegreesMeasurement90 = math.Pi / 90
 
 // Used to convert Degress value to Radians.
 // Formula: Radians = Radians * DegreesMeasurement180.
-//        : 180/π
+//
+//	: 180/π
 const DegreesMeasurement180 = math.Pi / 180
 
 const Epsilon = 0.00001

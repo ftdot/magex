@@ -1,15 +1,13 @@
 package interfaces
 
 import (
-	"github.com/ftdot/magex/components/transform"
 	"github.com/ftdot/magex/utils/vector2"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type ISprite interface {
-	SetTransform(t transform.ITransform)
-	GetTransform() transform.ITransform
+	GetTransform() ITransform
 	GetImage() *ebiten.Image
 	SetImage(image *ebiten.Image)
 	GetOptions() ISpriteOptions
@@ -19,7 +17,7 @@ type ISprite interface {
 	GetPivotScaled() *vector2.Vector2
 	GetPivotOppositeScaled() *vector2.Vector2
 	SetPivot(pivot *vector2.Vector2)
-	GetImageBounds() *vector2.Vector2
+	GetImageSize() *vector2.Vector2
 	GetBoudingBox() (bbA, bbB *vector2.Vector2)
-	GetID() string // Implement goi.Component
+	GetID() string
 }

@@ -3,8 +3,7 @@ package uitext
 import (
 	"image/color"
 
-	"github.com/ftdot/magex/components/transform"
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/utils"
 	"github.com/ftdot/magex/utils/mmath"
 
@@ -15,12 +14,6 @@ import (
 	"golang.org/x/image/font/sfnt"
 )
 
-type FontOptions struct {
-	FontColor color.RGBA
-	FontSize  float64
-	DPI       float64
-}
-
 var defaultDPI float64 = 72
 
 type iTextTransform interface {
@@ -30,21 +23,21 @@ type iTextTransform interface {
 ////
 
 type UIText struct {
-	Transform transform.ITransform
+	Transform interfaces.ITransform
 	Text      string
 	Font      *sfnt.Font
-	Options   FontOptions
+	Options   *interfaces.FontOptions
 	fontFace  font.Face
 
 	ID string
 }
 
-func New(t transform.ITransform, text string, f *sfnt.Font, fontSize float64) (*UIText, error) {
+func New(tf interfaces.ITransform, text string, f *sfnt.Font, fontSize float64) (*UIText, error) {
 	uit := &UIText{
-		Transform: t,
+		Transform: tf,
 		Text:      text,
 		Font:      f,
-		Options:   FontOptions{FontColor: color.RGBA{255, 255, 255, 255}, FontSize: fontSize, DPI: defaultDPI},
+		Options:   &interfaces.FontOptions{FontColor: color.RGBA{255, 255, 255, 255}, FontSize: fontSize, DPI: defaultDPI},
 		fontFace:  nil,
 		ID:        utils.GenerateComponentID(),
 	}
@@ -52,7 +45,7 @@ func New(t transform.ITransform, text string, f *sfnt.Font, fontSize float64) (*
 	if err != nil {
 		return nil, err
 	}
-	if tt, ok := t.(iTextTransform); ok {
+	if tt, ok := tf.(iTextTransform); ok {
 		tt.SetUIText(uit)
 	}
 	return uit, nil
@@ -73,7 +66,7 @@ func (t *UIText) updateFontFace() error {
 	return nil
 }
 
-func (t *UIText) SetColor(fontColor color.RGBA) {
+func (t *UIText) SetColor(fontColor color.Color) {
 	t.Options.FontColor = fontColor
 }
 
@@ -87,7 +80,11 @@ func (t *UIText) SetSize(fontSize float64) error {
 	return t.updateFontFace()
 }
 
-func (t *UIText) SetOptions(fontOptions FontOptions) error {
+func (t *UIText) GetOptions() *interfaces.FontOptions {
+	return t.Options
+}
+
+func (t *UIText) SetOptions(fontOptions *interfaces.FontOptions) error {
 	t.Options = fontOptions
 	return t.updateFontFace()
 }
@@ -98,7 +95,7 @@ func (t *UIText) DrawUIPriority() float64 {
 	return t.Transform.GetLayer()
 }
 
-func (t *UIText) DrawUI(gb *game.GameBase, screen *ebiten.Image) {
+func (t *UIText) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) {
 
 	var opts ebiten.DrawImageOptions
 

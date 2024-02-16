@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/utils/gomap/goi"
 	"github.com/ftdot/magex/utils/queue"
 
@@ -55,8 +55,8 @@ type GOMap struct {
 	// KEY: name of game object (string) = VALUE: DrawableUIQueued (interface)
 	mapDUIQs map[string]goi.DrawableUIQueued
 
-	gameObjects map[string]any // Map with the game objects
-	gameBase    *game.GameBase // Can be nil, if gameBase isn't provided
+	gameObjects map[string]any       // Map with the game objects
+	gameBase    interfaces.IGameBase // Can be nil, if gameBase isn't provided
 }
 
 // Creates new empty GOMap.
@@ -77,14 +77,14 @@ func New() *GOMap {
 ////
 
 // Must be called before all the operations.
-func (m *GOMap) SetupGame(gameBase *game.GameBase) {
+func (m *GOMap) SetupGame(gameBase interfaces.IGameBase) {
 	m.gameBase = gameBase
 }
 
 ////
 
 // Tries to get the game object by given name.
-func (m *GOMap) Get(name string) (i interface{}, ok bool) {
+func (m *GOMap) Get(name string) (i any, ok bool) {
 	i, ok = m.gameObjects[name]
 	return
 }
@@ -92,9 +92,9 @@ func (m *GOMap) Get(name string) (i interface{}, ok bool) {
 // Registers a new game object. If Awake() function implemented,
 // it will be called. This will be applied to all the components
 // of the game object.
-func (m *GOMap) Register(name string, gameObject interface{}) error {
+func (m *GOMap) Register(name string, gameObject any) error {
 	if c, ok := gameObject.(goi.WithComponents); ok {
-		for _, c := range c.GetComponents() {
+		for _, c := range c.WithComponents() {
 			if err := m.register(c.GetID(), c); err != nil {
 				return err
 			}
@@ -121,7 +121,7 @@ func (m *GOMap) Unregister(name string) error {
 	}
 
 	if c, ok := gameObject.(goi.WithComponents); ok {
-		for _, c := range c.GetComponents() {
+		for _, c := range c.WithComponents() {
 			if err := m.unregister(c.GetID(), c); err != nil {
 				return err
 			}
@@ -153,7 +153,7 @@ func (m *GOMap) UnregisterAll() error {
 
 // Registers a new game object. If it supports Awake() function,
 // it will be called.
-func (m *GOMap) register(id string, gameObject interface{}) error {
+func (m *GOMap) register(id string, gameObject any) error {
 	if s, ok := gameObject.(goi.Awakable); ok {
 		if err := s.Awake(); err != nil {
 			return err
@@ -189,7 +189,7 @@ func (m *GOMap) register(id string, gameObject interface{}) error {
 
 // Unregisters the game object. If Destroy() function implemented,
 // it will be called.
-func (m *GOMap) unregister(id string, gameObject interface{}) error {
+func (m *GOMap) unregister(id string, gameObject any) error {
 	if d, ok := gameObject.(goi.Destroyable); ok {
 		if err := d.Destroy(); err != nil {
 			return err

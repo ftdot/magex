@@ -3,11 +3,10 @@ package colliders
 import (
 	"image/color"
 
-	"github.com/ftdot/magex/game"
+	"github.com/ftdot/magex/interfaces"
 	"github.com/ftdot/magex/physics/collision2d"
 	"github.com/ftdot/magex/utils"
 	"github.com/ftdot/magex/utils/ctags"
-	"github.com/ftdot/magex/utils/interfaces"
 	"github.com/ftdot/magex/utils/vector2"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -17,9 +16,9 @@ import (
 // Collider that defines a circle around the sprite.
 type CircleCollider struct {
 	Sprite         interfaces.ISprite
-	Circle         *collision2d.Circle
+	CirclePolygon  *collision2d.Polygon
 	PositionOffset *vector2.Vector2
-	RadiusScalar   float64
+	SizeScalar     *vector2.Vector2
 	Tags           *ctags.CTags
 
 	ID string // System variable with ID of the component.
@@ -28,21 +27,22 @@ type CircleCollider struct {
 func NewCircleCollider(sprite interfaces.ISprite) *CircleCollider {
 	return &CircleCollider{
 		Sprite:         sprite,
-		Circle:         collision2d.NewCircle(vector2.Null.Copy(), -1),
+		CirclePolygon:  collision2d.NewCircle(vector2.Null.Copy(), -1, vector2.Null.Copy()).ToPolygon(),
 		PositionOffset: vector2.Null.Copy(),
-		RadiusScalar:   1,
+		SizeScalar:     vector2.Identity.Copy(),
+		Tags:           ctags.New(),
 		ID:             utils.GenerateComponentID(),
 	}
 }
 
 ////
 
-func (cc *CircleCollider) SetRadiusScalar(rs float64) {
-	cc.RadiusScalar = rs
+func (cc *CircleCollider) SetSizeScalar(ss *vector2.Vector2) {
+	cc.SizeScalar = ss
 }
 
-func (cc *CircleCollider) GetRadiusScalar() float64 {
-	return cc.RadiusScalar
+func (cc *CircleCollider) GetSizeScalar() *vector2.Vector2 {
+	return cc.SizeScalar
 }
 
 func (cc *CircleCollider) SetPositionOffset(posOffset *vector2.Vector2) {
@@ -54,7 +54,7 @@ func (cc *CircleCollider) GetPositionOffset() *vector2.Vector2 {
 }
 
 func (cc *CircleCollider) GetPolygon() *collision2d.Polygon {
-	return cc.Circle.ToPolygon()
+	return cc.CirclePolygon
 }
 
 func (cc *CircleCollider) GetSprite() interfaces.ISprite {
@@ -67,11 +67,12 @@ func (cc *CircleCollider) GetCTags() *ctags.CTags {
 
 ////
 
-func (cc *CircleCollider) PhysUpdate(game *game.GameBase) error {
-	cc.Circle = collision2d.NewCircle(
+func (cc *CircleCollider) PhysUpdate(gb interfaces.IGameBase) error {
+	cc.CirclePolygon = collision2d.NewCircle(
 		cc.Sprite.GetTransform().GetPosition().Add(cc.Sprite.GetPivotOppositeScaled()).Add(cc.PositionOffset),
-		cc.Sprite.GetImageBounds().X*cc.Sprite.GetTransform().GetScale().X/2*cc.RadiusScalar,
-	)
+		cc.Sprite.GetImageSize().X*cc.Sprite.GetTransform().GetScale().X/2,
+		cc.SizeScalar,
+	).ToPolygon()
 	return nil
 }
 
@@ -84,10 +85,10 @@ func (cc *CircleCollider) DrawUIPriority() float64 {
 // 	ebitenutil.DrawCircle(screen, c.Pos.X, c.Pos.Y, c.R, color.RGBA{25, 255, 25, 90})
 // }
 
-func (cc *CircleCollider) DrawUI(game *game.GameBase, screen *ebiten.Image) {
+func (cc *CircleCollider) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) {
 
-	verts := cc.Circle.ToPolygon().Points
-	pos := cc.Circle.Pos.Sub(game.CurrentScene.CurrentMainCamera.Transform.GetPosition())
+	verts := cc.CirclePolygon.Points
+	pos := cc.CirclePolygon.Pos.Sub(gb.GetCurrentScene().GetMainCamera().GetTransform().GetPosition())
 	for i := 0; i < len(verts); i++ {
 		vert := verts[i].Add(pos)
 		next := verts[0].Add(pos)
