@@ -87,7 +87,7 @@ func (cc *CircleCollider) DrawUIPriority() float64 {
 func (cc *CircleCollider) DrawUI(game *game.GameBase, screen *ebiten.Image) {
 
 	verts := cc.Circle.ToPolygon().Points
-	pos := cc.Circle.Pos
+	pos := cc.Circle.Pos.Sub(game.CurrentScene.CurrentMainCamera.Transform.GetPosition())
 	for i := 0; i < len(verts); i++ {
 		vert := verts[i].Add(pos)
 		next := verts[0].Add(pos)
