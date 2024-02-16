@@ -7,6 +7,8 @@ import (
 	"github.com/ftdot/magex/utils/vector2"
 )
 
+// TODO: Use transform.Transform as inheritance
+
 // Transform implements ITransform interface. Do not use Transform directly!
 // Use interface instead of. Do not change or get values directly.
 type TextTransform struct {
