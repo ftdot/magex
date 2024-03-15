@@ -5,7 +5,7 @@
 >
 > This is the **dev** branch. It means, that
 > product of this version in the development
-> status and have unstability API.
+> status and have unstable API.
 
 A game engine designed for **Survio**. It can be
 used to write your own games. But, this product
@@ -29,9 +29,11 @@ colorize the text by tags like: `[#fffff]`,
 - **These componenents are ready to use**:
 - - `BgColor` -- *Provides background color*
 - - `Camera` -- *Provides camera functional*
-- - `Colliders` (*Box*, *Circle*) - *Simple*
-*colliders based on the* [collision2d](https://github.com/Tarliton/collision2d)
-*library.*
+- - `Rigidbody` -- *Wraps the game object transform*
+*over the 2D physics engine.*
+- - - **NOTE ABOUT RIGIDBODY**. *there is also a*
+*pseudocomponent* `Shapes`. *It defines functions*
+*that helps to initiate the shapes*.
 - - `Sprite` - *Draw some sprite on the camera*
 - - `Tilemap` - *Easily places a tiles with the*
 *own coordinate system*
@@ -43,6 +45,9 @@ colorize the text by tags like: `[#fffff]`,
 *Sprite. Used only for drawing sprites on the*
 **UI** *level*
 - - - `Text` - *Simple text*
+- - - `UI Colliders` (*Box*, *Circle*) - *Simple*
+*colliders based on the* [collision2d](https://github.com/Tarliton/collision2d)
+*library.*
 
 ## Known issues
 

@@ -1,4 +1,4 @@
-package colliders
+package uicolliders
 
 import (
 	"image/color"
@@ -14,7 +14,7 @@ import (
 )
 
 // Collider that defines a circle around the sprite.
-type CircleCollider struct {
+type UICircleCollider struct {
 	Sprite         interfaces.ISprite
 	CirclePolygon  *collision2d.Polygon
 	PositionOffset *vector2.Vector2
@@ -24,8 +24,8 @@ type CircleCollider struct {
 	ID string // System variable with ID of the component.
 }
 
-func NewCircleCollider(sprite interfaces.ISprite) *CircleCollider {
-	return &CircleCollider{
+func NewUICircleCollider(sprite interfaces.ISprite) *UICircleCollider {
+	return &UICircleCollider{
 		Sprite:         sprite,
 		CirclePolygon:  collision2d.NewCircle(vector2.Null.Copy(), -1, vector2.Null.Copy()).ToPolygon(),
 		PositionOffset: vector2.Null.Copy(),
@@ -37,46 +37,50 @@ func NewCircleCollider(sprite interfaces.ISprite) *CircleCollider {
 
 ////
 
-func (cc *CircleCollider) SetSizeScalar(ss *vector2.Vector2) {
+func (cc *UICircleCollider) SetSizeScalar(ss *vector2.Vector2) {
 	cc.SizeScalar = ss
 }
 
-func (cc *CircleCollider) GetSizeScalar() *vector2.Vector2 {
+func (cc *UICircleCollider) GetSizeScalar() *vector2.Vector2 {
 	return cc.SizeScalar
 }
 
-func (cc *CircleCollider) SetPositionOffset(posOffset *vector2.Vector2) {
+func (cc *UICircleCollider) SetPositionOffset(posOffset *vector2.Vector2) {
 	cc.PositionOffset = posOffset
 }
 
-func (cc *CircleCollider) GetPositionOffset() *vector2.Vector2 {
+func (cc *UICircleCollider) GetPositionOffset() *vector2.Vector2 {
 	return cc.PositionOffset
 }
 
-func (cc *CircleCollider) GetPolygon() *collision2d.Polygon {
+func (cc *UICircleCollider) GetPolygon() *collision2d.Polygon {
 	return cc.CirclePolygon
 }
 
-func (cc *CircleCollider) GetSprite() interfaces.ISprite {
+func (cc *UICircleCollider) GetSprite() interfaces.ISprite {
 	return cc.Sprite
 }
 
-func (cc *CircleCollider) GetCTags() *ctags.CTags {
+func (cc *UICircleCollider) GetCTags() *ctags.CTags {
 	return cc.Tags
+}
+
+func (cc *UICircleCollider) GetPolygonAtPosition(pos *vector2.Vector2) *collision2d.Polygon {
+	return collision2d.NewCircle(
+		pos.Add(cc.Sprite.GetPivotOppositeScaled()).Add(cc.PositionOffset),
+		cc.Sprite.GetImageSize().X*cc.Sprite.GetTransform().GetScale().X/2,
+		cc.SizeScalar,
+	).ToPolygon()
 }
 
 ////
 
-func (cc *CircleCollider) PhysUpdate(gb interfaces.IGameBase) error {
-	cc.CirclePolygon = collision2d.NewCircle(
-		cc.Sprite.GetTransform().GetPosition().Add(cc.Sprite.GetPivotOppositeScaled()).Add(cc.PositionOffset),
-		cc.Sprite.GetImageSize().X*cc.Sprite.GetTransform().GetScale().X/2,
-		cc.SizeScalar,
-	).ToPolygon()
+func (cc *UICircleCollider) PhysUpdate(gb interfaces.IGameBase) error {
+	cc.CirclePolygon = cc.GetPolygonAtPosition(cc.Sprite.GetTransform().GetPosition())
 	return nil
 }
 
-func (cc *CircleCollider) DrawUIPriority() float64 {
+func (cc *UICircleCollider) DrawUIPriority() float64 {
 	return 90000
 }
 
@@ -85,7 +89,7 @@ func (cc *CircleCollider) DrawUIPriority() float64 {
 // 	ebitenutil.DrawCircle(screen, c.Pos.X, c.Pos.Y, c.R, color.RGBA{25, 255, 25, 90})
 // }
 
-func (cc *CircleCollider) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) {
+func (cc *UICircleCollider) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) {
 
 	verts := cc.CirclePolygon.Points
 	pos := cc.CirclePolygon.Pos.Sub(gb.GetCurrentScene().GetMainCamera().GetTransform().GetPosition())
@@ -103,6 +107,6 @@ func (cc *CircleCollider) DrawUI(gb interfaces.IGameBase, screen *ebiten.Image) 
 
 ////
 
-func (bc *CircleCollider) GetID() string {
+func (bc *UICircleCollider) GetID() string {
 	return bc.ID
 }

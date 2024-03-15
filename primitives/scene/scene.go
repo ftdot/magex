@@ -2,15 +2,17 @@ package scene
 
 import (
 	"github.com/ftdot/magex/interfaces"
+	"github.com/ftdot/magex/physics/physsystem"
 	"github.com/ftdot/magex/utils/gomap"
 )
 
 ////
 
 type Scene struct {
-	GOMap  interfaces.IGOMap
-	enterF interfaces.SceneF
-	exitF  interfaces.SceneF
+	gomap      interfaces.IGOMap
+	physSystem interfaces.PhysSystem
+	enterF     interfaces.SceneF
+	exitF      interfaces.SceneF
 
 	CurrentMainCamera  interfaces.ICamera
 	CurrentRigidbodies []interfaces.IRigidbody
@@ -18,7 +20,8 @@ type Scene struct {
 
 func New(enterF interfaces.SceneF, exitF interfaces.SceneF) *Scene {
 	return &Scene{
-		GOMap:              gomap.New(),
+		gomap:              gomap.New(),
+		physSystem:         physsystem.New(),
 		enterF:             enterF,
 		exitF:              exitF,
 		CurrentMainCamera:  nil,
@@ -31,13 +34,16 @@ func New(enterF interfaces.SceneF, exitF interfaces.SceneF) *Scene {
 // Called when scene is entered by game.
 func (s *Scene) Enter() error {
 
-	s.GOMap = gomap.New()
+	s.gomap = gomap.New()
+	if err := s.gomap.Register("Physics System", s.physSystem); err != nil {
+		return err
+	}
 
 	if err := s.enterF(s); err != nil {
 		return err
 	}
 
-	if err := s.GOMap.StartQueuedStartables(); err != nil {
+	if err := s.gomap.StartQueuedStartables(); err != nil {
 		return err
 	}
 
@@ -53,7 +59,7 @@ func (s *Scene) Exit() error {
 		}
 	}
 
-	if err := s.GOMap.UnregisterAll(); err != nil {
+	if err := s.gomap.UnregisterAll(); err != nil {
 		return err
 	}
 
@@ -73,8 +79,8 @@ func (s *Scene) SetExitF(exitF interfaces.SceneF) {
 ////
 
 func (s *Scene) SetMainCamera(cam interfaces.ICamera) error {
-	s.GOMap.Unregister("MainCamera") // MainCamera may not exists
-	if err := s.GOMap.Register("MainCamera", cam); err != nil {
+	s.gomap.Unregister("MainCamera") // MainCamera may not exists
+	if err := s.gomap.Register("MainCamera", cam); err != nil {
 		return err
 	}
 	s.CurrentMainCamera = cam
@@ -89,13 +95,9 @@ func (s *Scene) GetMainCamera() interfaces.ICamera {
 }
 
 func (s *Scene) GetGOMap() interfaces.IGOMap {
-	return s.GOMap
+	return s.gomap
 }
 
-func (s *Scene) SetCurrentRigidbodies(rigidbodies []interfaces.IRigidbody) {
-	s.CurrentRigidbodies = rigidbodies
-}
-
-func (s *Scene) GetCurrentRigidbodies() []interfaces.IRigidbody {
-	return s.CurrentRigidbodies
+func (s *Scene) GetPhysSystem() interfaces.PhysSystem {
+	return s.physSystem
 }

@@ -5,6 +5,7 @@ go 1.21.3
 require (
 	github.com/google/uuid v1.4.0
 	github.com/hajimehoshi/ebiten/v2 v2.6.2
+	github.com/E4/box2d v1.0.2
 )
 
 require (

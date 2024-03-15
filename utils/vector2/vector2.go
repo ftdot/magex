@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 
+	"github.com/E4/box2d"
 	"github.com/ftdot/magex/utils/mmath"
 )
 
@@ -30,6 +31,10 @@ func New(x, y float64) *Vector2 {
 
 func NewInt(x, y int) *Vector2 {
 	return &Vector2{X: float64(x), Y: float64(y)}
+}
+
+func NewB2(b2v box2d.B2Vec2) *Vector2 {
+	return &Vector2{X: b2v.X, Y: b2v.Y}
 }
 
 func (v *Vector2) Copy() *Vector2 {
@@ -263,6 +268,21 @@ func (v *Vector2) IsNaN() bool {
 // If sign == 0, IsInf reports whether any coordinate is either infinity.
 func (v *Vector2) IsInf(sign int) bool {
 	return math.IsInf(v.X, sign) || math.IsInf(v.Y, sign)
+}
+
+// Returns true if X and Y equals to 0
+func (v *Vector2) IsNull() bool {
+	return v.X == 0 && v.Y == 0
+}
+
+// Converts vector to the Box2D vector
+func (v *Vector2) AsB2() box2d.B2Vec2 {
+	return *box2d.NewB2Vec2(v.X, v.Y)
+}
+
+// Returns the tuple (x, y float64)
+func (v *Vector2) AsTuple() (x, y float64) {
+	return v.X, v.Y
 }
 
 func (v *Vector2) String() string {

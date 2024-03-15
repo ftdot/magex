@@ -11,6 +11,5 @@ type IScene interface {
 	GetMainCamera() ICamera
 	GetGOMap() IGOMap
 
-	SetCurrentRigidbodies([]IRigidbody)
-	GetCurrentRigidbodies() []IRigidbody
+	GetPhysSystem() PhysSystem
 }

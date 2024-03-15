@@ -14,8 +14,8 @@ import (
 // But keep in mind, that the event fuctions can be called many
 // times with different mouse buttons.
 type UIButton struct {
-	Sprite    interfaces.ISprite
-	Colliders []interfaces.ICollider
+	Sprite      interfaces.ISprite
+	UIColliders []interfaces.IUICollider
 
 	onHoverF   interfaces.UIButtonHoverF
 	exitHoverF interfaces.UIButtonHoverF
@@ -28,11 +28,11 @@ type UIButton struct {
 	ID string
 }
 
-func New(sprite interfaces.ISprite, colliders []interfaces.ICollider) *UIButton {
+func New(sprite interfaces.ISprite, uicolliders []interfaces.IUICollider) *UIButton {
 	return &UIButton{
-		Sprite:    sprite,
-		Colliders: colliders,
-		hovered:   false,
+		Sprite:      sprite,
+		UIColliders: uicolliders,
+		hovered:     false,
 		clicked: map[ebiten.MouseButton]bool{
 			ebiten.MouseButton0: false,
 			ebiten.MouseButton1: false,
@@ -98,7 +98,7 @@ func (b *UIButton) handleClicked(gb interfaces.IGameBase, btn ebiten.MouseButton
 func (b *UIButton) Update(gb interfaces.IGameBase) error {
 
 	anyColl := false
-	for _, col := range b.Colliders {
+	for _, col := range b.UIColliders {
 		if collision2d.PointInPolygon(vector2.NewInt(ebiten.CursorPosition()), col.GetPolygon()) {
 			anyColl = true
 		}

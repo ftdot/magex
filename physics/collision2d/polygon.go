@@ -11,10 +11,21 @@ type Polygon struct {
 	Pos, Offset                        *vector2.Vector2
 	Angle                              float64
 	Points, CalcPoints, Edges, Normals []*vector2.Vector2
+
+	original *Polygon
 }
 
 func (polygon *Polygon) String() string {
 	return fmt.Sprintf("{Pos:%sOffset:%sAngle: %f\nPoints: %s\nCalcPoints: %s}", polygon.Pos, polygon.Offset, polygon.Angle, polygon.Points, polygon.CalcPoints)
+}
+
+func (polygon *Polygon) Clone(pos *vector2.Vector2, angle float64) *Polygon {
+	p := Polygon{Pos: pos, Offset: vector2.Null.Copy(), Angle: angle}
+	return p.SetPoints(polygon.original.Points)
+}
+
+func (polygon *Polygon) GetOriginal() *Polygon {
+	return polygon.original
 }
 
 // NewPolygon creates a new polygon with pos, offset, angle and points.
@@ -26,6 +37,7 @@ func NewPolygon(pos, offset *vector2.Vector2, angle float64, points []float64) *
 		vectorPoints[i/2] = vector2.New(points[i], points[i+1])
 	}
 	polygon := Polygon{Pos: pos, Offset: offset, Angle: angle}
+	polygon.original = &Polygon{Pos: pos, Offset: offset, Angle: angle, Points: vectorPoints}
 	return polygon.SetPoints(vectorPoints)
 }
 

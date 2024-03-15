@@ -1,33 +1,21 @@
 package interfaces
 
-import (
-	"github.com/ftdot/magex/utils/ctags"
-	"github.com/ftdot/magex/utils/vector2"
+import "github.com/E4/box2d"
+
+type RBType uint8
+
+var (
+	RBTypeStatic    = RBType(box2d.B2BodyType.B2_staticBody)
+	RBTypeKinematic = RBType(box2d.B2BodyType.B2_kinematicBody)
+	RBTypeDynamic   = RBType(box2d.B2BodyType.B2_dynamicBody)
 )
 
 ////
 
-type CollisionEvent struct {
-	GameBase IGameBase
-	OtherRB  IRigidbody
-	Tags     *ctags.CTags
-}
-
-type CollFunc func(coll CollisionEvent) error
-
-////
-
 type IRigidbody interface {
-	GetTransform() ITransform
-	GetColliders() []ICollider
-	SetColliders(colliders []ICollider)
-	GetMass() float64
-	SetMass(mass float64)
-	GetCurrentVelocity() *vector2.Vector2
-	SetCurrentVelocity(velocity *vector2.Vector2)
-	OnCollision(ocf CollFunc)
-	ExitCollision(ecf CollFunc)
-	Activate(gb IGameBase)
-	Deactivate(gb IGameBase)
+	GetType() RBType
+	GetB2Body() *box2d.B2Body
+	GetFixture() *box2d.B2Fixture
+	UpdateTransform()
 	GetID() string // Implement goi.Component
 }
