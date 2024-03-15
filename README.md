@@ -51,15 +51,10 @@ colorize the text by tags like: `[#fffff]`,
 
 ## Known issues
 
-- **Rigidbody** is unstable, doesn't for in this
-moment.
-- **Camera** scaling is work, but these is no some
+- **Camera** scaling is work, but there is no some
 algorithms to scale the camera for the center
 - **Tilemap** displays tiles incorrectly (one-two
 pixels of the tile textures overlaps with other)
-- **GOMap** calls event-functions with incorrect
-priority. Incorrect texture mapping occurs
-(blinking).
 
 if you know a solution to the problem, please
 create an [issue](https://github.com/ftdot/magex/issues/new)
